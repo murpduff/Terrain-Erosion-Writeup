@@ -50,7 +50,7 @@ To get this effect, we need the gradient vector, which is obtained through the p
 
 Using $\vec{g}$, the perpendicular unit vector tangent to the terrain $\hat{d}$ can be obtained.
 
-$$\vec{d} = \langle -\delta y, \delta x \rangle \quad \hat{d} = \frac{\vec{d}}{\| \vec{d} \|} \quad (2)$$
+$$\vec{d} = \langle -\delta y, \delta x \rangle \quad \hat{d} = \frac{\vec{d}}{\Vert \vec{d} \Vert } \quad (2)$$
 
 Deriving $\phi$ requires the dot product between $\vec{p}$ and $\hat{d}$. This is because, as established before, moving along the ascent gradient should yield the same result for $\phi$. Because the dot product between perpendicular vectors is 0, the moving perpendicular to $\hat{d}$ will leave the dot product unchanged. Although $\vec{p}$ represents a position on the mesh with reference to some reference point, it is useful to establish our own reference point as well, denoted as $\vec{c}$. This allows us to change the pivot of our dot product, which will become more useful later. This yields the equation:
 
@@ -79,7 +79,7 @@ Although this function applied to meshes of constant gradient gives clean lookin
 
 **Figure 8:** The warping of gullies as distance from pivot point $\vec{c}$ increases
 
-The reason this occurs is because of the pivot point $\vec{c}$ defined earlier. Using one anchor for the dot product means that, as $\| \vec{o} \|$ increases, the dot product becomes more volatile. Similar to the arc lenght of a circle being proportional to the radius, a large $\| \vec{o} \|$ means that even a small difference in gradient results in a large difference in $\phi$. The solution involves splitting the terrain into discrete cells of cell size $h$, each with their own pivot point. This ensures that the distance from a pivot point will be less than the specified size of a cell. For future convenience, we can transform $\vec{p}$ and $\vec{c}$ so that, rather than being based on arbitrary world units, it is normalized with respect to the specified cell size $h$. In other words, $\tilde{\vec{p}} \equiv \vec{p}/h$ and $\tilde{\vec{c}} \equiv \vec{c}/h$. This means that the distance between two ends of a cell is 1. Using this, we obtain a cell identity vector $\tilde{\vec{p}}_\text{cell} = \lfloor \tilde{\vec{p}} \rfloor$,where $\lfloor \cdot \rfloor$ is applied component-wise. In this way, $\tilde{\vec{p}}_\text{cell}$ is unique for each cell, but shared by points within the same cell.
+The reason this occurs is because of the pivot point $\vec{c}$ defined earlier. Using one anchor for the dot product means that, as $\Vert \vec{o} \Vert$ increases, the dot product becomes more volatile. Similar to the arc lenght of a circle being proportional to the radius, a large $\Vert \vec{o} \Vert$ means that even a small difference in gradient results in a large difference in $\phi$. The solution involves splitting the terrain into discrete cells of cell size $h$, each with their own pivot point. This ensures that the distance from a pivot point will be less than the specified size of a cell. For future convenience, we can transform $\vec{p}$ and $\vec{c}$ so that, rather than being based on arbitrary world units, it is normalized with respect to the specified cell size $h$. In other words, $\tilde{\vec{p}} \equiv \vec{p}/h$ and $\tilde{\vec{c}} \equiv \vec{c}/h$. This means that the distance between two ends of a cell is 1. Using this, we obtain a cell identity vector $`\tilde{\vec{p}}_\text{cell} = \lfloor \tilde{\vec{p}} \rfloor`$,where $\lfloor \cdot \rfloor$ is applied component-wise. In this way, $`\tilde{\vec{p}}_\text{cell}`$ is unique for each cell, but shared by points within the same cell.
 
 
 ![Visualize Cells](images/VisualizeCells.png)
@@ -233,11 +233,11 @@ $$\varphi'(x) = 3ax^2 + 2bx + c = 0 \\
 
  Solving the system of equations yields $a = -2$ and $b = 3$ giving the base smoothstep function:
 
- $$\varphi(x) = 3x^2 -2x^3 \left\{ x|0 \leq x \leq 1 \right\} \quad (21)$$
+ $$\varphi(x) = 3x^2 -2x^3 \left\lbrace x|0 \leq x \leq 1 \right\rbrace \quad (21)$$
 
  Ideally, we should be able to customize the domain to have more control over the erosion fading. This can be done with an extra parameter $f_E$, which represents erosion falloff. Functionally, it increases the domain of the smoothstep, stretching the curve. This means that greater values of $f_E$ require $\vec{g}$ to be greater for the erosion strength to have a substantial effect. Additionally, for values of $x$ before the domain, the function should return 0, and for $x$ after the domain, it should return 1. We can express this in the smoothstep like so:
 
-$$\varphi(x) = \left \{ \begin{array}{cl}
+$$\varphi(x) = \left\lbrace \begin{array}{cl}
 0 & : \ u < 0 \\
 3u^2 -2u^3 & : 0 \leq u \leq 1 \\
 1 & : \ u > 1
@@ -250,11 +250,11 @@ $$\varphi(x) = \left \{ \begin{array}{cl}
 
 We can use this to define the weight parameter $t$:
 
-$$t(\vec{p}) = \varphi(\| \vec{g} \|) \quad (23)$$
+$$t(\vec{p}) = \varphi(\Vert \vec{g} \Vert ) \quad (23)$$
 
 so that we get the final erosion layer function:
 
-$$E(\vec{p}) = \text{lerp}(z_0, G(\vec{p}), \varphi(\| \vec{g} \|)) \quad (24)$$
+$$E(\vec{p}) = \text{lerp}(z_0, G(\vec{p}), \varphi(\Vert \vec{g} \Vert )) \quad (24)$$
 
 ![Smooth Peaks](images/ShowcaseSmoothPeaks.png)
 
@@ -297,14 +297,14 @@ $$\nabla G = \frac{S^2 \nabla C - CS\nabla S}{N^3} \quad (30)$$
 ### Obtaining the Final Derivation for $\nabla E$
 We can now derive a final relation for $E(\vec{p})$, which includes the gully falloff. Using Equation 19, we get:
 
-$$E(\vec{p}) = \text{lerp}(z_0, G(\vec{p}), \varphi(\| \vec{g} \|)) = z_0(1 - t) + G \cdot t \\
+$$E(\vec{p}) = \text{lerp}(z_0, G(\vec{p}), \varphi(\Vert \vec{g} \Vert )) = z_0(1 - t) + G \cdot t \\
  = t \cdot (G - z_0) + z_0 \quad (31)$$
 
 Thus, we can use the product rule to obtain the gradient vector.
 
 $$\nabla E(\vec{p}) = t \cdot \nabla G + (G - z_0) \cdot \nabla t \quad (32)$$
 
-Now, we need to determine $\nabla t$. For simplicity, we can define a scalar term $m(\vec{p}) \equiv \| \vec{g}(\vec{p}) \|$. 
+Now, we need to determine $\nabla t$. For simplicity, we can define a scalar term $m(\vec{p}) \equiv \Vert \vec{g}(\vec{p}) \Vert$. 
 
 $$t = \varphi(m) \\
 \nabla t = \varphi'(m) \cdot \nabla m \quad (33)$$
@@ -320,7 +320,7 @@ $$\nabla t = \frac{6u(1 - u) \nabla m}{f_E} \quad (35)$$
 
 Keep in mind this is only the case for $0 < u < 1$, so $\nabla t$ is more accurately presented as:
 
-$$\nabla t = \left\{ \begin{array}{cl}
+$$\nabla t = \left\lbrace \begin{array}{cl}
 \frac{6u(1 - u) \nabla m}{f_E} & : \ 0 \leq u \leq 1 \\
 \vec{0} & : \ u < 0, u>1
 \end{array} \right. \quad (36)$$
