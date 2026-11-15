@@ -2,9 +2,9 @@
 
 ## Introduction
 
-Procedural terrain generation is an integral aspect of video-games, movies, and simulations, allowing programs to algorithmically create billions of possible digital environments with convincing terrain layouts based on a set of described parameters. [2] Most terrain generators utilize gradient noise algorithms which can reproduce the random, non-repeating yet continuous property of real-world terrain, yet are limited in replicating other phenomena responsible for many unique structures found in nature. One example is erosion, which is responsible for gorges and gullies evident in mountain ranges. Because erosion is pivotal in shaping mountains, simple noise functions often produce lackluster results. Some programs create an erosion effect by simulating the movement of thousands of water droplets over time. This produces realistic results, yet is computationally intensive and cannot be used in chunk based generation because of its dependence on neighboring terrain. Another solution is to mimic erosion by algorithmically generating gullies using cosine waves. Though not based on physics, it produces convincing terrain and is comparatively cheaper to compute and entirely position dependent. This paper will investigate the mathematics behind the erosion-mimicking algorithm, specifically the use of analytical derivatives in shaping the terrain.
+Procedural terrain generation is an integral aspect of video-games, movies, and simulations, allowing programs to algorithmically create billions of possible digital environments with convincing terrain layouts based on a set of described parameters (Doran and Parberry). Most terrain generators utilize gradient noise algorithms which can reproduce the random, non-repeating yet continuous property of real-world terrain, yet are limited in replicating other phenomena responsible for many unique structures found in nature. One example is erosion, which is responsible for gorges and gullies evident in mountain ranges. Because erosion is pivotal in shaping mountains, simple noise functions often produce lackluster results. Some programs create an erosion effect by simulating the movement of thousands of water droplets over time. This produces realistic results, yet is computationally intensive and cannot be used in chunk based generation because of its dependence on neighboring terrain. Another solution is to mimic erosion by algorithmically generating gullies using cosine waves. Though not based on physics, it produces convincing terrain and is comparatively cheaper to compute and entirely position dependent. This paper will investigate the mathematics behind the erosion-mimicking algorithm, specifically the use of analytical derivatives in shaping the terrain.
 
-The aim of this investigation is to mathematically derive an equation which produces erosion gullies, along with its partial derivatives, as a function of position in 2D space. The erosion algorithm depends on a base terrain layer that it is applied to, in this case, a 2D noise function (simplex gradient noise) with known partial derivatives. This procedure is heavily inspired by the work of Rune Skovbo Johansen, also known online as runevision, specifically his YouTube video on this topic [1], which this investigation explores in further detail, particularly in exploring the multivariable differentiation.
+The aim of this investigation is to mathematically derive an equation which produces erosion gullies, along with its partial derivatives, as a function of position in 2D space. The erosion algorithm depends on a base terrain layer that it is applied to, in this case, a 2D noise function (simplex gradient noise) with known partial derivatives. This procedure is heavily inspired by the work of Rune Skovbo Johansen, also known online as runevision, specifically his YouTube video on this topic (Johansen), which this investigation explores in further detail, particularly in exploring the multivariable differentiation.
 
 ## Base Terrain Mesh Structure
 
@@ -18,7 +18,7 @@ Given a 2D terrain function $S(\vec{p})$, the height of each vertex is determine
 
 ![Simplex Noise](images/simplex-noise.png)
 
-**Figure 2:** Visualizing the 2D Simplex Noise function $S(\vec{p})$ through a 2D image, with the output range [-1, 1] visualized with brightness. [3]
+**Figure 2:** Visualizing the 2D Simplex Noise function $S(\vec{p})$ through a 2D image, with the output range [-1, 1] visualized with brightness (Sharpe).
 
 The simplex noise algorithm $S(\vec{p})$, a form of gradient noise, will be the base terrain layer which the erosion will be applied to. Gradient noise functions utilize pseudo-random gradients which are interpolated to create smooth fading between non-repeating values. This is immensely useful for avoiding repetition while maintaining the property of being continuous and differentiable. 
 
@@ -110,7 +110,7 @@ $$\sum\limits_{n=1}^{k} a\cos(\phi _n) = A\cos(\Phi) \quad (7)$$
 
 Where $A$ represents the resultant amplitude and $\Phi$ the resultant phase.
 
-We can blend the gullies by summing the weighted average of $\cos(\phi)$ in neighboring cells based on the distance of that cell's pivot from $\tilde{\vec{p}}$. The weight $w$ can be determined using a Gaussian function so that $w$ decreases as distance from the cell pivot increases. A Gaussian function is a bell shaped function ideal for weight calcuations because it gives most importance to values near 0, with a smooth falloff as the magnitude of the input increases.[4] The simplest such function, known as the standard Gaussian function, is:
+We can blend the gullies by summing the weighted average of $\cos(\phi)$ in neighboring cells based on the distance of that cell's pivot from $\tilde{\vec{p}}$. The weight $w$ can be determined using a Gaussian function so that $w$ decreases as distance from the cell pivot increases. A Gaussian function is a bell shaped function ideal for weight calcuations because it gives most importance to values near 0, with a smooth falloff as the magnitude of the input increases (“Gaussian Function”). The simplest such function, known as the standard Gaussian function, is:
 
 $$\text{Gaussian}(r) = e^{-r^2} \quad (8)$$
 
@@ -149,7 +149,7 @@ The gullies now flow down the slopes continuously. However, as seen in Figure 12
 $$S \equiv \sum\limits_{n=1}^{k} a\sin(\phi _n) = A\sin(\Phi) \\
   C \equiv \sum\limits_{n=1}^{k} a\cos(\phi _n) = A\cos(\Phi) \quad (13)$$
 
-Determining $A$ gives us the normalization factor that can be applied to set the amplitude always to 1 [5], no matter the phase difference. We can use the Pythagorean Trigonmetric Identity to find this value.
+Determining $A$ gives us the normalization factor that can be applied to set the amplitude always to 1 (Tricard et al.), no matter the phase difference. We can use the Pythagorean Trigonmetric Identity to find this value.
 
 $$S^2 + C^2 = A^2 \sin^2(\Phi) + A^2 \cos^2(\Phi) \\
 = A^2 (\sin^2(\Phi) + \cos^2(\Phi)) \\
@@ -179,7 +179,7 @@ Looking from above, the cosine gullies are clearly much more consistent across d
 
 **Figure 13:** Gullies blended between cells by weight, with each point sampling from neighboring cells with $k = 2$ and amplitudes normalized to yield consistent amplitudes in all directions
 
-However, the paths are still very straight and unnatural looking. Because the pivot points in each cell are spaced equally from each other, the pathways of the gullies tend to form aligned with the grid. To avoid this, we can simply offset $\tilde{\vec{c}}$ by a vector with randomly generated components so that there is slight variation in the pivot locations. The most effective way to do this is using a pseudo-random number function $H(\vec{v})$, which, given an input, will always return the same output with vector components between and including -1 to 1. How the function works will not be explained, but the important properties are that its output is not truly random, hence the term "pseudo-random". Specifically, the same input $\vec{v}$ will always yield the same output.[6] Still, there are no discernable patterns in the sequence and all values are equally represented. Thus, using $H(\vec{v})$, we can modify $\tilde{\vec{c}}$ to contain the cell-based pseudo-random offset.
+However, the paths are still very straight and unnatural looking. Because the pivot points in each cell are spaced equally from each other, the pathways of the gullies tend to form aligned with the grid. To avoid this, we can simply offset $\tilde{\vec{c}}$ by a vector with randomly generated components so that there is slight variation in the pivot locations. The most effective way to do this is using a pseudo-random number function $H(\vec{v})$, which, given an input, will always return the same output with vector components between and including -1 to 1. How the function works will not be explained, but the important properties are that its output is not truly random, hence the term "pseudo-random". Specifically, the same input $\vec{v}$ will always yield the same output (Green). Still, there are no discernable patterns in the sequence and all values are equally represented. Thus, using $H(\vec{v})$, we can modify $\tilde{\vec{c}}$ to contain the cell-based pseudo-random offset.
 
 $$\tilde{\vec{c}}_{i, j} = \tilde{\vec{p}}_{cell} + \langle i, j \rangle + \langle 0.5, 0.5 \rangle + A_H \cdot H(\tilde{\vec{p}}_{cell} + \langle i, j \rangle) \quad (18)$$
 
@@ -208,7 +208,7 @@ This effect can be mitigated by simply fading the erosion function where slopes 
 
 $$\text{lerp}(v_0,v_1,t) = v_0(1 - t) + v_1 t \quad (19)$$
 
-Where $v_0$ is the intial value, $v_1$ is the ending value, and $t$, ranging from [0, 1], is the weight between $v_0$ and $v_1$.[7] Thus, we can represent the Erosion height with:
+Where $v_0$ is the intial value, $v_1$ is the ending value, and $t$, ranging from [0, 1], is the weight between $v_0$ and $v_1$ (“Linear Interpolation”). Thus, we can represent the Erosion height with:
 
 $$E(\vec{p}) = \text{lerp}(z_0, G(\vec{p}), t) \quad (20)$$
 
@@ -216,7 +216,7 @@ Where $z_0$ is the height target at small slopes.
 
 ### Deriving a Smoothstep Function
 
-To determine the weight $t$, we could input $\vec{g}$ into a smoothstep function denoted as $\varphi$. Essentially, when $t = 0$, there is no erosion, and when $t = 1$, the erosion is at maximum strength. Using a smoothstep function allows $t$ to change continuously as $\vec{g}$ changes. The main property of the smoothstep function is that it ranges from $x=0$ to $x=1$, with $\varphi(0) = 0$ and $\varphi(1) = 1$, and $\varphi'(0) = 0$ and $\varphi'(1)= 0$, which yields a smooth relationship as the gradient changes.[8] We can derive such a function using a third order polynomial.
+To determine the weight $t$, we could input $\vec{g}$ into a smoothstep function denoted as $\varphi$. Essentially, when $t = 0$, there is no erosion, and when $t = 1$, the erosion is at maximum strength. Using a smoothstep function allows $t$ to change continuously as $\vec{g}$ changes. The main property of the smoothstep function is that it ranges from $x=0$ to $x=1$, with $\varphi(0) = 0$ and $\varphi(1) = 1$, and $\varphi'(0) = 0$ and $\varphi'(1)= 0$, which yields a smooth relationship as the gradient changes (“smoothstep”). We can derive such a function using a third order polynomial.
 
 $$\varphi(x) = ax^3 + bx^2 + cx + d$$
 
@@ -348,12 +348,14 @@ Which yields accurate gradients for the erosion gullies on top of the base terra
 ## Layering Erosion and Final Effects
 What makes the erosion effect most convincing is the layering of the algorithm for multiple iterations. The first erosion function yields the results seen in Figure 19. When adding a second layer, the same algorithm can be applied with increasing $f$, decreasing $a$, and $\vec{g}$ being obtained from the previous erosion instance. This means that the additional layers will add a higher density of gullies with lower strength, which gives the affect of added detail. Because of the gullies' dependence on the terrain slope, multiple layers cause gullies to branch out in patterns highly remniscant with real-world terrain. 
 
-![1 Layer Erosion](images/ShowcaseGF-L1.png)
-![2 Layer Erosion](images/ShowcaseGF-L2.png)
-![3 Layer Erosion](images/ShowcaseGF-L3.png)
-![4 Layer Erosion](images/ShowcaseGF-L4.png)
+|   |   |
+|:---:|:---:|
+| ![1 Layer Erosion](images/ShowcaseGF-L1.png) | ![2 Layer Erosion](images/ShowcaseGF-L2.png) |
+| (a) | (b) |
+| ![3 Layer Erosion](images/ShowcaseGF-L3.png) | ![4 Layer Erosion](images/ShowcaseGF-L4.png) |
+| (c) | (d) |
 
-**Figures 20-23:** The resulting meshes when the erosion function $E(\vec{p})$ is passed 1-4 times
+**Figure 20:** The resulting meshes when the erosion function $E(\vec{p})$ is passed (a) once, (b) twice, (c) three times and (d) four times
 
 ## Conclusion
 
@@ -361,7 +363,7 @@ This concludes the erosion-mimicking terrain function. This investigation was ab
 
 ![Colored Erosion](images/ColoredMountains.png)
 
-**Figure 24:** An example of using the terrain gradients to color the terrain, with flat regions colored white and steep regions colored brown.
+**Figure 21:** An example of using the terrain gradients to color the terrain, with flat regions colored white and steep regions colored brown.
 
 The main drawback of such an approach for creating eroded terrain is that it does not actually simulate the erosion. This in itself is highly beneficial as stated in the introduction, yet still results in output not physically accurate. As such, many of the parameters are not based on the physics of erosion, but rather the design of the mimicking algorithm. Importantly, this algorithm utilizes analytical derivatives in contrast to finite differences. Analytical derivatives are able to produce more accurate results than finite differences, and are also much less computationally intensive. Finite differences are used in Equation 38 when calculating $\nabla m$. In this case, however, it only adds 2 extra calculations and allows us to avoid modelling a second derivative. Furthermore, analytical gradients for the gullies where $\hat{d}$ changes quickly are not accurate to the actual slope. This inaccuracy is mostly mitigated by simply fading the erosion near the slopes.
 
