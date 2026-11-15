@@ -84,7 +84,7 @@ The reason this occurs is because of the pivot point $\vec{c}$ defined earlier. 
 
 ![Visualize Cells](images/VisualizeCells.png)
 
-**Figure 9:** Visualizing $\tilde{\vec{p}}_\text{cell}$ through color, where red and green represent the x and y components of $\tilde{\vec{p}}_\text{cell}$ respectively
+**Figure 9:** Visualizing $`\tilde{\vec{p}}_\text{cell}`$ through color, where red and green represent the x and y components of $`\tilde{\vec{p}}_\text{cell}`$ respectively
 
 Geometrically, $\tilde{\vec{p}}_\text{cell}$ would be located in the very corner of the cell. Ideally, the pivot point would be located in the center to minimize potential difference in distance. Because $\tilde{\vec{p}}$ is normalized relative to the cell size, we can simply add $\langle 0.5, 0.5 \rangle$ to displace the position to the center, yielding:
 
