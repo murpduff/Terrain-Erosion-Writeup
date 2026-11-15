@@ -146,14 +146,16 @@ With a large $k$, the erosion blends a large area of cells. At a certain distanc
 
 The gullies now flow down the slopes continuously. However, as seen in Figure 12, the amplitudes of the gullies are inconsistent throughout the terrain, being much stronger when aligned with the $x$ and $z$ axis. This is because the superposition of cosine waves results in constructive and destruct interference based on the phase difference. In Equation 7, this is seen with the term $A$, which is not equivalent to $a$. This relationship also applies to sine waves so that we can define summation terms S and C:
 
-$$S \equiv \sum\limits_{n=1}^{k} a\sin(\phi _n) = A\sin(\Phi) \\
-  C \equiv \sum\limits_{n=1}^{k} a\cos(\phi _n) = A\cos(\Phi) \quad (13)$$
+$$\begin{gathered}S \equiv \sum\limits_{n=1}^{k} a\sin(\phi _n) = A\sin(\Phi) \\
+  C \equiv \sum\limits_{n=1}^{k} a\cos(\phi _n) = A\cos(\Phi)
+\end{gathered} \quad (13)$$
 
 Determining $A$ gives us the normalization factor that can be applied to set the amplitude always to 1 (Tricard et al.), no matter the phase difference. We can use the Pythagorean Trigonmetric Identity to find this value.
 
-$$S^2 + C^2 = A^2 \sin^2(\Phi) + A^2 \cos^2(\Phi) \\
+$$\begin{gathered}S^2 + C^2 = A^2 \sin^2(\Phi) + A^2 \cos^2(\Phi) \\
 = A^2 (\sin^2(\Phi) + \cos^2(\Phi)) \\
-= A^2$$
+= A^2
+\end{gathered}$$
 
 so that
 
@@ -226,10 +228,11 @@ $$\varphi(x) = ax^3 + bx^2 + cx$$
 
 Knowing that the derivative at $x = 0$ and $x = 1$ is 0, we can find $a$, $b$, and $c$.
 
-$$\varphi'(x) = 3ax^2 + 2bx + c = 0 \\
+$$\begin{gathered}\varphi'(x) = 3ax^2 + 2bx + c = 0 \\
  \varphi'(0) = c = 0 \\
  \varphi'(1) = 3a + 2b = 0 \\
- \varphi(1) = a + b = 1$$
+ \varphi(1) = a + b = 1
+\end{gathered}$$
 
  Solving the system of equations yields $a = -2$ and $b = 3$ giving the base smoothstep function:
 
@@ -278,8 +281,9 @@ $$\nabla G(\vec{p}) = \frac{N \nabla C - C \nabla N}{N^2} \quad (26)$$
 
 We can obtain the gradient vector $\nabla N$ with:
 
-$$\nabla N = \frac{1}{2}(S^2 + C^2)^{-\frac{1}{2}} \cdot (2S\nabla S + 2C\nabla C) \\
-= \frac{S\nabla S + C\nabla C}{N} \quad (27)$$
+$$\begin{gathered}\nabla N = \frac{1}{2}(S^2 + C^2)^{-\frac{1}{2}} \cdot (2S\nabla S + 2C\nabla C) \\
+= \frac{S\nabla S + C\nabla C}{N}
+\end{gathered} \quad (27)$$
 
 Substituting this in Equation 26 and multiplying the numerator and denominator by $N$ yields:
 
@@ -287,8 +291,9 @@ $$\nabla G = \frac{N^2 \nabla C - C(S\nabla S + C \nabla C)}{N^3} \quad (28)$$
 
 Substituting $N^2$ gives:
 
-$$\nabla G = \frac{(S^2 + C^2) \nabla C - CS \nabla S - C^2 \nabla C}{N^3} \\
- = \frac{S^2\nabla C + C^2 \nabla C - CS \nabla S - C^2 \nabla C}{N^3} \quad (29)$$
+$$\begin{gathered}\nabla G = \frac{(S^2 + C^2) \nabla C - CS \nabla S - C^2 \nabla C}{N^3} \\
+ = \frac{S^2\nabla C + C^2 \nabla C - CS \nabla S - C^2 \nabla C}{N^3}
+\end{gathered} \quad (29)$$
 
 To which the two instances of $C^2 \nabla C$ in Equation 29 cancel out to yield the final gradient vector:
 
@@ -297,8 +302,9 @@ $$\nabla G = \frac{S^2 \nabla C - CS\nabla S}{N^3} \quad (30)$$
 ### Obtaining the Final Derivation for $\nabla E$
 We can now derive a final relation for $E(\vec{p})$, which includes the gully falloff. Using Equation 19, we get:
 
-$$E(\vec{p}) = \text{lerp}(z_0, G(\vec{p}), \varphi(\Vert \vec{g} \Vert )) = z_0(1 - t) + G \cdot t \\
- = t \cdot (G - z_0) + z_0 \quad (31)$$
+$$\begin{gathered}E(\vec{p}) = \text{lerp}(z_0, G(\vec{p}), \varphi(\Vert \vec{g} \Vert )) = z_0(1 - t) + G \cdot t \\
+ = t \cdot (G - z_0) + z_0
+\end{gathered} \quad (31)$$
 
 Thus, we can use the product rule to obtain the gradient vector.
 
@@ -306,13 +312,15 @@ $$\nabla E(\vec{p}) = t \cdot \nabla G + (G - z_0) \cdot \nabla t \quad (32)$$
 
 Now, we need to determine $\nabla t$. For simplicity, we can define a scalar term $m(\vec{p}) \equiv \Vert \vec{g}(\vec{p}) \Vert$. 
 
-$$t = \varphi(m) \\
-\nabla t = \varphi'(m) \cdot \nabla m \quad (33)$$
+$$\begin{gathered}t = \varphi(m) \\
+\nabla t = \varphi'(m) \cdot \nabla m
+\end{gathered} \quad (33)$$
 
 $\varphi$ is a 1D function so we can use the prime notation. We can get $\varphi'$ using Equation 22.
 
-$$\varphi = 3u^2 -2u^3 \\
- \varphi' = \frac{6u - 6u^2}{f_E} = \frac{6u(1 - u)}{f_E} \quad (34)$$
+$$\begin{gathered}\varphi = 3u^2 -2u^3 \\
+ \varphi' = \frac{6u - 6u^2}{f_E} = \frac{6u(1 - u)}{f_E}
+\end{gathered} \quad (34)$$
 
 We must divide by $f_E$ as part of the chain rule, since $u = m/f_E$. Equation 34 can be substituted into Equation 33 to yield:
 
